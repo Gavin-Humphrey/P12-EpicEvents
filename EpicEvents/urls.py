@@ -15,14 +15,17 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
-from accounts.views import ChangePasswordView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_nested import routers
+from accounts.views import SignupViewset
 
-app_name = 'users'
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('login/', TokenObtainPairView.as_view(), name='login'),
-    path('update-password/', ChangePasswordView.as_view(), name='update_password'),
+    path('signup/', SignupViewset.as_view(), name='signup'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

@@ -18,14 +18,21 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_nested import routers
-from accounts.views import SignupViewset
+from accounts.views import SignupViewset, ClientViewSet
+from accounts import views
 
 
 
+
+
+client_router = routers.DefaultRouter()
+client_router.register(r'clients', ClientViewSet, basename='clients')
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('signup/', SignupViewset.as_view(), name='signup'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('', include(client_router.urls))
 ]
+

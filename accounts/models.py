@@ -85,11 +85,12 @@ class Client(models.Model):
     status = models.BooleanField(default=False, verbose_name="Converted")
 
     def __str__(self):
-        client_name = f"Client #{self.id} : {self.first_name} {self.last_name} - {self.email}"
+    
         if self.status is False:
             stat = "PROSPECT"
         else:
             stat = "CONVERTED"
+        client_name = f"Client #{self.id} : {self.first_name} {self.last_name} - {self.email} ({stat})"    
         return client_name
 
     def update_date(self):

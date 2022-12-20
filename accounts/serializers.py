@@ -1,45 +1,9 @@
-"""from django.contrib.auth.password_validation import validate_password
-from rest_framework import serializers
-
-from .models import User
-
-
-
-
-class ChangePasswordSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
-    old_password = serializers.CharField(write_only=True, required=True)
-
-    class Meta:
-        model = User
-        fields = ('old_password', 'password', 'password2')
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-
-        return attrs
-
-    def validate_old_password(self, value):
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError({"old_password": "Old password is not correct"})
-        return value
-
-    def update(self, instance, validated_data):
-
-        instance.set_password(validated_data['password'])
-        instance.save()
-
-        return instance
-"""
-
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, ValidationError, SerializerMethodField
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Client
 
 
 User = get_user_model()
@@ -92,3 +56,19 @@ class UserSerializer(ModelSerializer):
             'phone',
             'team',
         ]
+
+
+
+class ClientSerializer(serializers.ModelSerializer):
+    """
+    Client serializer, with sales contact info added as read_only fields.
+    """
+    sales_contact_first_name = serializers.CharField(read_only=True, source='sales_contact.first_name')
+    sales_contact_last_name = serializers.CharField(read_only=True, source='sales_contact.last_name')
+    sales_contact_email = serializers.CharField(read_only=True, source='sales_contact.email')
+
+    class Meta:
+        model = Client
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'mobile', 'date_created', 'date_updated',
+                  'company_name', 'sales_contact', 'sales_contact_first_name', 'sales_contact_last_name',
+                  'sales_contact_email']

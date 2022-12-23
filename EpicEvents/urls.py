@@ -20,19 +20,22 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_nested import routers
 from accounts.views import SignupViewset, ClientViewSet
 from accounts import views
+from contracts.views import ContractViewSet
 
 
 
 
 
-client_router = routers.DefaultRouter()
-client_router.register(r'clients', ClientViewSet, basename='clients')
+router = routers.DefaultRouter()
+router.register(r'clients', ClientViewSet, basename='clients')
+router.register(r'contracts', ContractViewSet, basename='ContractViewSet')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('signup/', SignupViewset.as_view(), name='signup'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('', include(client_router.urls))
+    path('', include(router.urls))
 ]
 

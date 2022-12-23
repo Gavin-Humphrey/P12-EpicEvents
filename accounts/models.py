@@ -5,6 +5,8 @@ from django.contrib.auth.models import (
 from datetime import datetime
 
 
+
+
 class UserManager(BaseUserManager):
     def _create_user(self, email, password=None,  **extra_fields):
         """
@@ -39,13 +41,11 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-
+MANAGEMENT = "MANAGEMENT"
+SALES = "SALES"
+SUPPORT = "SUPPORT"
 class User(AbstractUser):
 
-    MANAGEMENT = "MANAGEMENT"
-    SALES = "SALES"
-    SUPPORT = "SUPPORT"
-    
     phone = models.CharField(max_length=20, null=True, blank=True)
     mobile = models.CharField(max_length=20, blank=True, null=True)
     team = models.CharField(
@@ -54,8 +54,7 @@ class User(AbstractUser):
             (SALES, SALES),
             (SUPPORT, SUPPORT)
         ],
-        max_length=10,
-        #default=MANAGEMENT
+        max_length=20
     )
     username = None
     email = models.EmailField(max_length=255, unique=True)
@@ -90,7 +89,7 @@ class Client(models.Model):
             stat = "PROSPECT"
         else:
             stat = "CONVERTED"
-        client_name = f"Client #{self.id} : {self.first_name} {self.last_name} - {self.email} ({stat})"    
+        client_name = f"Client Nº{self.id} : {self.first_name} {self.last_name} - {self.email} ({stat})"    
         return client_name
 
     def update_date(self):

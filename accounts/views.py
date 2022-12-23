@@ -6,9 +6,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from EpicEvents.filters import ClientFilter
+from accounts.filters import ClientFilter
 from .models import Client
 from .serializers import ClientSerializer
+from .permissions import IsSales, IsSupport, IsManagement
+
 
 from .serializers import UserSignupSerializer
 User = get_user_model()
@@ -46,11 +48,13 @@ class ClientViewSet(viewsets.ModelViewSet):
         - List or retrieve for authenticated users.
         :return: A list of permissions.
         """
-        permission_classes = [permissions.IsAuthenticated()]
+        permission_classes = [permissions.IsAuthenticated(),]
         if self.action == 'retrieve' or self.action == 'list':
-            permission_classes = [permissions.IsAuthenticated()]
+            permission_classes = [permissions.IsAuthenticated(),IsManagement | IsSales | IsSupport,]
         if self.action == 'create':
-            permission_classes = [permissions.IsAuthenticated()]
-        if self.action == 'destroy' or self.action == 'update' or self.action == 'partial_update':
-            permission_classes = [permissions.IsAuthenticated()]
+            permission_classes = [permissions.IsAuthenticated(),IsManagement | IsSales,]
+        if self.action == 'update' or self.action == 'partial_update':
+            permission_classes = [permissions.IsAuthenticated(), IsManagement | IsSales,]
+        if self.action == 'destroy':
+            permission_classes = [permissions.IsAuthenticated(), IsManagement,]
         return permission_classes

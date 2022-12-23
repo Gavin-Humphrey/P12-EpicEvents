@@ -37,8 +37,8 @@ class UserCreationForm(forms.ModelForm):
 class UserChangeForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
-    disabled password hash display field.
-    """
+    disabled password hash display field."""
+    
     password = ReadOnlyPasswordHashField()
 
     class Meta:
@@ -46,23 +46,24 @@ class UserChangeForm(forms.ModelForm):
         fields = ('email',)
 
 
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
 
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User.
+    """The fields to be used in displaying the User model.
+    These override the definitions on the base UserAdmin
+    that reference specific fields on auth.User."""
+    
     list_display = ( 
-        'id', 'email', 'last_name', 'first_name', 'phone', 'date_joined', 'team',
+        'id', 'email', 'last_name', 'first_name', 'phone', 'date_joined', 'team'
         )
-    list_filter = ('team',)
+    list_filter = ('team', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'mobile')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'team', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'team')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -76,8 +77,15 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
+### For group
+"""class UserAdmin(admin.ModelAdmin):
+
+    list_display = ( 
+        'id', 'email', 'last_name', 'first_name')"""
+
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin) 
+
 
 
 class ClientAdmin(admin.ModelAdmin):

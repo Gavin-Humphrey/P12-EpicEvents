@@ -86,7 +86,7 @@ WSGI_APPLICATION = "EpicEvents.wsgi.application"
 
         'NAME': "EpicEvents",
 
-        'USER': "EpicEvents",
+        'USER': "postgres",
 
         'PASSWORD': "admin",
 

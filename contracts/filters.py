@@ -3,16 +3,13 @@ from .models import Contract
 
 
 class ContractFilter(filters.FilterSet):
-    """
-        Contract filter for API search.
-    """
+    date_created = filters.CharFilter(field_name='date_created', lookup_expr='icontains')
+    amount = filters.NumberFilter(field_name='amount', lookup_expr='gte')
+    client_last_name = filters.CharFilter(field_name='client__last_name', lookup_expr='icontains')
+    client_email = filters.CharFilter(field_name='client__email', lookup_expr='iexact')
+    status = filters.BooleanFilter(field_name="signed")
+
     class Meta:
         model = Contract
-        fields = {
-            'client__last_name': ['exact', 'icontains'],
-            'client__email': ['exact', 'icontains'],
-            'date_created': ['exact', 'icontains', 'gte', 'lte'],
-            'amount': ['exact', 'gte', 'lte']
-        }
-
+        fields = ['date_created', 'amount', 'client']
 

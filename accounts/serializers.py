@@ -1,74 +1,56 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, ValidationError, SerializerMethodField
-from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import Client
+
 
 
 User = get_user_model()
 
 
-class UserSignupSerializer(ModelSerializer):
 
-    tokens = SerializerMethodField()
+
+class UserListSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
-            'id',
-            'email',
-            'password',
-            'first_name',
-            'last_name',
-            'mobile',
-            'team',
-            'tokens'
-        ]
+        fields = ['id', 'username', 'password', 'team']
+        extra_kwargs = {'password': {'write_only': True}}
 
-    def validate_email(self, value: str) -> str:
-        if User.objects.filter(email=value).exists():
-            raise ValidationError('User already exists')
-        return value
 
-    def validate_password(self, value: str) -> str:
-        if value is not None:
+class UserDetailSerializer(ModelSerializer):
+
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', "password", "first_name", "last_name", "email", "date_joined", "is_superuser", "team"]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate_password(self, value):
+       
+        if value is not None and len(value) >= 8:
             return make_password(value)
-        raise ValidationError('Password is empty')
-
-    def get_tokens(self, user: User) -> dict:
-        tokens = RefreshToken.for_user(user)
-        data = {
-            'refresh': str(tokens),
-            'access': str(tokens.access_token)
-        }
-        return data
-
-
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            'email',
-            'first_name',
-            'last_name',
-            'phone',
-            'team',
-        ]
+        raise ValidationError('Password is empty or inssuficient')
 
 
 
-class ClientSerializer(serializers.ModelSerializer):
-    """
-    Client serializer, with sales contact info added as read_only fields.
-    """
-    sales_contact_first_name = serializers.CharField(read_only=True, source='sales_contact.first_name')
-    sales_contact_last_name = serializers.CharField(read_only=True, source='sales_contact.last_name')
-    sales_contact_email = serializers.CharField(read_only=True, source='sales_contact.email')
+class ClientListSerializer(ModelSerializer):
 
     class Meta:
         model = Client
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'mobile', 'date_created', 'date_updated',
-                  'company_name', 'sales_contact', 'sales_contact_first_name', 'sales_contact_last_name',
-                  'sales_contact_email']
+        fields = ['id', 'first_name', 'last_name', 'email', 'sales_contact']
+
+
+
+class ClientDetailSerializer(serializers.ModelSerializer):
+    """
+    Client serializer, with sales contact info added as read_only fields.
+    """
+
+    class Meta:
+        model = Client
+        fields = '__all__'
+        read_only__fields = ('date_created', 'date_updated','sales_contact',  "id")

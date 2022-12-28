@@ -1,50 +1,56 @@
 from django.db import models
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractUser
+    BaseUserManager, AbstractUser, Group
 )
 from datetime import datetime
 
 
-
+use_in_migrations = True
 
 class UserManager(BaseUserManager):
-    def _create_user(self, email, password=None,  **extra_fields):
+    def create_user(self, username, email, password=None,  **extra_fields):
         """
-        Creates and saves a User with the given email, date of
-        birth and password.
+        Creates and saves a User with the given email and password.
         """
         if not email:
             raise ValueError('Users must have an email address')
-        user = self.model(email=self.normalize_email(email), **extra_fields)
+        user = self.model(email=self.normalize_email(email), username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
-        """Create and save a regular User with the given email and password."""
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
+    def create_staffuser(self, username, email, password=None, **extra_fields):
+        """Create and save a staff User with the given email and password."""
+        if email is None:
+            raise TypeError('Users must have an email address')
 
-    def create_superuser(self, email, password=None, **extra_fields):
+        user = self.create_user(username, email, password)
+        user.is_superuser = False
+        user.is_staff = True
+        user.team = "SALES" #group
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
         """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
+        Creates and saves a superuser with the given email, and password.
         """
-        #user = self.create_user(email, password=password, **extra_fields)
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-        return self._create_user(email, password, **extra_fields)
+        if email is None:
+            raise TypeError('Users must have an email address')
+        user = self.create_user(username, email, password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.team = "MANAGEMENT"
+        user.save(using=self._db)
+        return user
 
 
 MANAGEMENT = "MANAGEMENT"
 SALES = "SALES"
 SUPPORT = "SUPPORT"
+NONE = "NONE"
 class User(AbstractUser):
+
 
     phone = models.CharField(max_length=20, null=True, blank=True)
     mobile = models.CharField(max_length=20, blank=True, null=True)
@@ -54,22 +60,28 @@ class User(AbstractUser):
             (SALES, SALES),
             (SUPPORT, SUPPORT)
         ],
-        max_length=20
+        max_length=20,
+        default=NONE
     )
-    username = None
+    #username = None
     email = models.EmailField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
-
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+    readonly_fields = ['date_created', 'date_updated']
 
     def __str__(self):
-        return self.email
+        return f"{self.first_name} {self.last_name} - {self.email}"
+
+    class Meta:
+        verbose_name = "user"
+        verbose_name_plural = "users"
 
 
+    
 
 class Client(models.Model):
     first_name = models.CharField(max_length=50)
@@ -89,7 +101,7 @@ class Client(models.Model):
             stat = "PROSPECT"
         else:
             stat = "CONVERTED"
-        client_name = f"Client Nº{self.id} : {self.first_name} {self.last_name} - {self.email} ({stat})"    
+        client_name = f"Client Nº{self.id} : {self.first_name} - {self.last_name}  ({stat})"    
         return client_name
 
     def update_date(self):

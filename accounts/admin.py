@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import Group
 
 from .models import User, Client
 
@@ -43,7 +44,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('username',)
 
 
 class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
@@ -56,14 +57,15 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
     that reference specific fields on auth.User."""
     
     list_display = ( 
-        'id', 'email', 'last_name', 'first_name', 'phone', 'date_joined', 'team'
+        'id', 'username', 'last_name', 'first_name', 'email', 'phone',  'date_joined', 'team'
         )
     list_filter = ('team', 'is_active')
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('username', 'email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'mobile')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'team', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'team')}),
+        
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -79,7 +81,6 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
 
 ### For group
 """class UserAdmin(admin.ModelAdmin):
-
     list_display = ( 
         'id', 'email', 'last_name', 'first_name')"""
 
@@ -96,7 +97,7 @@ class ClientAdmin(admin.ModelAdmin):
         ('Info', {'fields': ('date_created', 'date_updated')})
     )
     readonly_fields = ('date_created', 'date_updated')
-    list_display = ('full_name', 'company_name', 'email', 'phone', 'mobile', 'status', 'sales_contact')
+    list_display = ('id', 'full_name',  'email', 'phone', 'company_name', 'status', 'sales_contact_id')
     list_filter = ('status', 'sales_contact')
     search_fields = ('first_name', 'last_name', 'company_name', 'sales_contact')
 

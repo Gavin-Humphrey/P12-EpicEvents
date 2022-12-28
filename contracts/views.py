@@ -1,31 +1,50 @@
 from rest_framework import viewsets, permissions
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
+
 from .models import Contract
 from .filters import ContractFilter
-from .serializers import ContractSerializer
-from .permissions import ContractPermissions
-from accounts.permissions import (IsManagement, IsSales, IsSupport)
+from . import serializers
+from accounts.views import MultipleSerializerMixin
+from accounts.models import User, Client
+
+from accounts.permissions import (IsAdmin, IsSales, )
 
 
 
-class ContractViewSet(viewsets.ModelViewSet):
-    queryset = Contract.objects.all()
-    serializer_class = ContractSerializer
+
+class ContractViewset(MultipleSerializerMixin, ModelViewSet):
+
+    serializer_class = serializers.ContractListSerializer
+    detail_serializer_class = serializers.ContractDetailSerializer
+    permission_classes = [IsAdmin|IsSales, ]
     filter_backends = [DjangoFilterBackend]
     filterset_class = ContractFilter
 
+    def get_queryset(self):
+        user = self.request.user
 
-    def get_permissions(self):
-        
-        permission_classes = [permissions.IsAuthenticated(),]
-        if self.action == 'retrieve' or self.action == 'list':
-            permission_classes = [permissions.IsAuthenticated(), IsManagement | IsSales | IsSupport,]
-        if self.action == 'create':
-            permission_classes = [permissions.IsAuthenticated(), IsManagement | IsSales,]
-        if self.action == 'update' or self.action == 'partial_update':
-            permission_classes = [permissions.IsAuthenticated(), IsManagement | IsSales,]
-        if self.action == 'destroy':
-            permission_classes = [permissions.IsAuthenticated(), IsManagement | ContractPermissions,]
-        return permission_classes
+        if self.action == "list" and not user.is_superuser:
+            queryset = Contract.objects.filter(sales_contact=self.request.user)
+        else:
+            queryset = Contract.objects.all()
+
+        return queryset
+
+    
+    def create(self, request):        
+        data = request.data.copy()
+        data['sales_contact'] = request.user.id
+        data['signed'] = 'false'
+
+        serialized_data = self.detail_serializer_class(data=data)
+        serialized_data.is_valid(raise_exception=True)
+        serialized_data.save()
+
+        client = get_object_or_404(Client, pk=serialized_data.data.get('client'))
+        if client.sales_contact is None:
+            client.sales_contact = request.user
+            client.save()
+        return Response(serialized_data.data)

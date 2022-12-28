@@ -1,5 +1,4 @@
 """EpicEvents URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
 Examples:
@@ -16,26 +15,32 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_nested import routers
-from accounts.views import SignupViewset, ClientViewSet
 from accounts import views
-from contracts.views import ContractViewSet
+from contracts.views import ContractViewset
 
-
-
+from accounts.views import UserViewset, ClientViewset
 
 
 router = routers.DefaultRouter()
-router.register(r'clients', ClientViewSet, basename='clients')
-router.register(r'contracts', ContractViewSet, basename='ContractViewSet')
+
+user_router = routers.SimpleRouter()
+user_router.register('users', UserViewset, basename='users')
+clients_router = routers.SimpleRouter()
+clients_router.register(r'clients', ClientViewset, basename='clients')
+contracts_router = routers.SimpleRouter()
+contracts_router.register(r'contracts', ContractViewset, basename='contracts')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('login/', TokenObtainPairView.as_view(), name='login'),
-    path('signup/', SignupViewset.as_view(), name='signup'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('', include(router.urls))
+    path('', include('rest_framework.urls')),
+    #path('', include(router.urls)),
+    
+    path('', include(user_router.urls)),
+    path('', include(clients_router.urls)),
+    path('', include(contracts_router.urls)),
 ]
-
+#urlpatterns += router.urls

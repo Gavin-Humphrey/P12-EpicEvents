@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from accounts.models import Client, SALES
+from accounts.models import Client #SALES
 
 
 class Contract(models.Model):
@@ -8,7 +8,7 @@ class Contract(models.Model):
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'team': SALES}
+        #limit_choices_to={'team': SALES}
     )
     client = models.ForeignKey(
         to=Client,
@@ -16,7 +16,7 @@ class Contract(models.Model):
         limit_choices_to={'status': True},
         related_name='contract'
     )
-    status = models.BooleanField(default=False, verbose_name="Signed")
+    status = models.BooleanField(default=False, verbose_name="signed")
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     amount = models.FloatField()

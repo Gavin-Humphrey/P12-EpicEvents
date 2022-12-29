@@ -10,7 +10,7 @@ from . import serializers
 from accounts.views import MultipleSerializerMixin
 from accounts.models import User, Client
 
-from accounts.permissions import (IsAdmin, IsSales, )
+from accounts.permissions import (IsManagement, IsSales, )
 
 
 
@@ -19,7 +19,7 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.ContractListSerializer
     detail_serializer_class = serializers.ContractDetailSerializer
-    permission_classes = [IsAdmin | IsSales,]
+    permission_classes = [IsManagement | IsSales,]
     filter_backends = [DjangoFilterBackend]
     filterset_class = ContractFilter
 

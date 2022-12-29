@@ -17,7 +17,7 @@ from contracts.models import Contract
         return True"""
 
 
-class IsAdmin(BasePermission):
+class IsManagement(BasePermission):
 
     def has_permission(self, request, view):
         user = request.user

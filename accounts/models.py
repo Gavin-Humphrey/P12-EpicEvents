@@ -49,7 +49,6 @@ class UserManager(BaseUserManager):
 MANAGEMENT = "MANAGEMENT"
 SALES = "SALES"
 SUPPORT = "SUPPORT"
-NONE = "NONE"
 class User(AbstractUser):
 
 
@@ -62,7 +61,6 @@ class User(AbstractUser):
             (SUPPORT, SUPPORT)
         ],
         max_length=20,
-        default=NONE
     )
     #username = None
     email = models.EmailField(max_length=255, unique=True)

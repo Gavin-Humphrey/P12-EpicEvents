@@ -6,7 +6,7 @@ from rest_framework.decorators import action, permission_classes
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.contrib.auth.models import Group
-from .permissions import IsAdmin, IsSales
+from .permissions import IsManagement, IsSales
 from . import serializers
 from accounts.filters import ClientFilter
 from .models import Client
@@ -31,7 +31,7 @@ class UserViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.UserListSerializer
     detail_serializer_class = serializers.UserDetailSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsManagement,)
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -42,7 +42,7 @@ class ClientViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.ClientListSerializer
     detail_serializer_class = serializers.ClientDetailSerializer
-    permission_classes = [IsAdmin|IsSales] #|IsSupport
+    permission_classes = [IsManagement|IsSales] #|IsSupport
     filterset_class = ClientFilter
 
     def get_queryset(self):

@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions
+from rest_framework import status, viewsets, permissions
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -19,7 +19,7 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.ContractListSerializer
     detail_serializer_class = serializers.ContractDetailSerializer
-    permission_classes = [IsAdmin|IsSales, ]
+    permission_classes = [IsAdmin | IsSales,]
     filter_backends = [DjangoFilterBackend]
     filterset_class = ContractFilter
 
@@ -42,9 +42,18 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
         serialized_data = self.detail_serializer_class(data=data)
         serialized_data.is_valid(raise_exception=True)
         serialized_data.save()
-
         client = get_object_or_404(Client, pk=serialized_data.data.get('client'))
         if client.sales_contact is None:
             client.sales_contact = request.user
             client.save()
-        return Response(serialized_data.data)
+        return Response(serialized_data.data, status=status.HTTP_202_ACCEPTED)
+
+
+    def partial_update(self, request, contract_pk):
+        contract = get_object_or_404(Contract, id=contract_pk)
+        serialized_data = self.detail_serializer_class(contract, data=request.data, partial=True)
+        if serialized_data.is_valid(raise_exception=True):
+            serialized_data.save()
+            return Response(serialized_data.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+    

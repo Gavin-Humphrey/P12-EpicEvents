@@ -7,10 +7,13 @@ from django.contrib.auth.models import Group
 
 from .models import User, Client
 
+#admin.site.unregister(Group)#
 
 class UserCreationForm(forms.ModelForm):
-    """A form for creating new users. Includes all the required
-    fields, plus a repeated password."""
+    """
+    A form for creating new users. Includes all the required
+    fields, plus a repeated password.
+    """
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
@@ -36,10 +39,11 @@ class UserCreationForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    """A form for updating users. Includes all the fields on
+    """
+    A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
-    disabled password hash display field."""
-    
+    disabled password hash display field.
+    """
     password = ReadOnlyPasswordHashField()
 
     class Meta:
@@ -51,11 +55,11 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
-
-    """The fields to be used in displaying the User model.
+    """
+    The fields to be used in displaying the User model.
     These override the definitions on the base UserAdmin
-    that reference specific fields on auth.User."""
-    
+    that reference specific fields on auth.User.
+    """
     list_display = ( 
         'id', 'username', 'last_name', 'first_name', 'email', 'phone',  'date_joined', 'team'
         )
@@ -63,7 +67,7 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'mobile')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'team', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser','team', 'groups')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
         
     )
@@ -85,7 +89,7 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
         'id', 'email', 'last_name', 'first_name')"""
 
 # Now register the new UserAdmin...
-admin.site.register(User, UserAdmin) 
+admin.site.register(User, UserAdmin) #
 
 
 

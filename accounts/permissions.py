@@ -21,7 +21,6 @@ class IsAdmin(BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
-
         if user.is_superuser:
             return True
 
@@ -32,7 +31,8 @@ class IsSales(BasePermission):
         user = request.user
         kwargs = view.kwargs
 
-        if user.groups.filter(name="SALES").exists():            
+        if user.groups.filter(name="SALES").exists(): 
+            print(user, view.action)           
             if view.action in ["list", "create", "signed"]:
                 return True
             elif view.action == "destroy":

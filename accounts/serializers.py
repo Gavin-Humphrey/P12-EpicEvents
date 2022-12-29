@@ -3,15 +3,10 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, ValidationError, SerializerMethodField
-
 from .models import Client
 
 
-
 User = get_user_model()
-
-
-
 
 class UserListSerializer(ModelSerializer):
 
@@ -22,7 +17,6 @@ class UserListSerializer(ModelSerializer):
 
 
 class UserDetailSerializer(ModelSerializer):
-
 
     class Meta:
         model = User
@@ -36,7 +30,6 @@ class UserDetailSerializer(ModelSerializer):
         raise ValidationError('Password is empty or inssuficient')
 
 
-
 class ClientListSerializer(ModelSerializer):
 
     class Meta:
@@ -44,12 +37,10 @@ class ClientListSerializer(ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'sales_contact']
 
 
-
 class ClientDetailSerializer(serializers.ModelSerializer):
     """
     Client serializer, with sales contact info added as read_only fields.
     """
-
     class Meta:
         model = Client
         fields = '__all__'

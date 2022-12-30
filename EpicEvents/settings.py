@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django_filters',
     'accounts',
     'contracts',
-    'events',   
+    'events',
 ]
 
 MIDDLEWARE = [

@@ -1,4 +1,5 @@
 from rest_framework import status, viewsets, permissions
+from rest_framework.exceptions import PermissionDenied #
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -49,11 +50,19 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
         return Response(serialized_data.data, status=status.HTTP_202_ACCEPTED)
 
 
-    def partial_update(self, request, contract_pk):
+    def partial_update(self, request, contract_pk, obj):
         contract = get_object_or_404(Contract, id=contract_pk)
         serialized_data = self.detail_serializer_class(contract, data=request.data, partial=True)
         if serialized_data.is_valid(raise_exception=True):
             serialized_data.save()
             return Response(serialized_data.data, status=status.HTTP_202_ACCEPTED)
         return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+    ### To do ==== signed contracts can't be updated
+    '''if request.obj.status is True:
+        raise PermissionDenied("Cannot update a signed contract.")
+    elif serialized_data.is_valid(raise_exception=True): 
+        serialized_data.save()
+        return Response(serialized_data.data, status=status.HTTP_202_ACCEPTED)
+    return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)'''

@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_nested import routers
-from accounts import views
-from contracts.views import ContractViewset
-
+#from accounts import views
 from accounts.views import UserViewset, ClientViewset
+from contracts.views import ContractViewset
+from events.views import EventViewset
+
+
 
 
 router = routers.DefaultRouter()
@@ -32,15 +34,18 @@ clients_router.register(r'clients', ClientViewset, basename='clients')
 contracts_router = routers.SimpleRouter()
 contracts_router.register(r'contracts', ContractViewset, basename='contracts')
 
+events_router = routers.SimpleRouter()
+events_router.register(r'events', EventViewset, basename='events')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('', include('rest_framework.urls')),
-    #path('', include(router.urls)),
     
     path('', include(user_router.urls)),
     path('', include(clients_router.urls)),
     path('', include(contracts_router.urls)),
+    path('', include(events_router.urls)),
 ]
-#urlpatterns += router.urls
+urlpatterns += router.urls

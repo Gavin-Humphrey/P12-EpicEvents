@@ -18,7 +18,6 @@ class ContractDetailSerializer(ModelSerializer):
     class Meta:
         model = Contract
         fields = '__all__'
-        #read_only_fields = ['status']
 
     def validate_sales_contact(self, value):
         """

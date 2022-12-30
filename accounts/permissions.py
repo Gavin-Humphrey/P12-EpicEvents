@@ -3,18 +3,9 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 from accounts.models import User, Client
 from contracts.models import Contract
+from events.models import Event
 
 
-
-"""class IsManagement(BasePermission):
-    def has_permission(self, request, view):
-        if request.user and bool(request.user.groups.filter(name='MANAGEMENT')):
-            print('Management confirmed')
-            return True
-        return False
-
-    def has_object_permission(self, request, view, obj):
-        return True"""
 
 
 class IsManagement(BasePermission):
@@ -54,3 +45,22 @@ class IsSales(BasePermission):
             return True
 
 
+class IsSupport(BasePermission):
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        if Group.objects.get(name='SUPPORT') in user.groups.all():
+            if view.action == "list":
+                return True
+            elif view.kwargs.get('pk'):
+                event = get_object_or_404(Event, pk=view.kwargs['pk'])
+                if event.support_contact == user:
+                    return True
+
+    def has_object_permission(self, request, view, obj):
+
+        support_team_events = ['update']
+        if "events" in request.path_info and view.action in support_team_events:
+            if obj.support_contact == request.user:
+                return True

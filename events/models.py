@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import User, Client
+from accounts.models import User, Client, SUPPORT
 from contracts.models import Contract
 
 
@@ -14,11 +14,16 @@ class Event(models.Model):
         CANCELED = 'CANCELED'
 
     id = models.BigAutoField(primary_key=True)
+    contract = models.OneToOneField(
+        to=Contract,
+        on_delete=models.CASCADE,
+        limit_choices_to={'status': True},
+        related_name='event'
+    )
     name = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
-    support_contact = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
-
+    support_contact = models.ForeignKey(to=User, on_delete=models.CASCADE, limit_choices_to={'team': SUPPORT},
+        related_name='event')
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now_add=True)
     event_status = models.CharField(max_length=100, verbose_name='Event Status',

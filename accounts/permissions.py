@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from accounts.models import User, Client
 from contracts.models import Contract
 from events.models import Event
+from rest_framework.exceptions import PermissionDenied 
 
 
 
@@ -42,6 +43,8 @@ class IsSales(BasePermission):
     def has_object_permission(self, request, view, obj):
 
         if obj.sales_contact in [request.user, None]:
+            if view.action == 'update' and obj.status is True:
+                raise PermissionDenied("Cannot update a signed contract.")
             return True
 
 

@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from accounts.views import MultipleSerializerMixin
 from django_filters.rest_framework import DjangoFilterBackend

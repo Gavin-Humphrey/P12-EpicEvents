@@ -90,7 +90,8 @@ class Client(models.Model):
     company_name = models.CharField(max_length=250)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now_add=True)
-    sales_contact = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='sales_contact')
+    sales_contact = models.ForeignKey(to=User, on_delete=models.CASCADE, limit_choices_to={'team': SALES},
+        related_name='sales_contact')
     status = models.BooleanField(default=False, verbose_name="Converted")
 
     def __str__(self):

@@ -31,10 +31,11 @@ class UserDetailSerializer(ModelSerializer):
 
 
 class ClientListSerializer(ModelSerializer):
-
+    
     class Meta:
         model = Client
         fields = ['id', 'first_name', 'last_name', 'email', 'sales_contact']
+
 
 
 class ClientDetailSerializer(serializers.ModelSerializer):
@@ -44,4 +45,4 @@ class ClientDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = '__all__'
-        read_only__fields = ('date_created', 'date_updated','sales_contact',  "id")
+        read_only__fields = ('id', 'date_created', 'date_updated','sales_contact')

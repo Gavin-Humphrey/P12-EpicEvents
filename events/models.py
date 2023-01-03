@@ -17,9 +17,12 @@ class Event(models.Model):
     contract = models.OneToOneField(
         to=Contract,
         on_delete=models.CASCADE,
-        limit_choices_to={'status': True},
+        limit_choices_to={'is_signed': True},
         related_name='event'
     )
+    '''client = models.ForeignKey(to=Client, on_delete=models.PROTECT, limit_choices_to={'is_signed': True},
+        related_name='event')
+    '''
     name = models.CharField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
     support_contact = models.ForeignKey(to=User, on_delete=models.CASCADE, limit_choices_to={'team': SUPPORT},

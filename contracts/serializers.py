@@ -1,31 +1,35 @@
 from rest_framework.serializers import ModelSerializer, ValidationError
 from .models import Contract
 from rest_framework import fields
-from accounts.models import User
+from accounts.models import User, Client
 
 
 
 
 class ContractListSerializer(ModelSerializer):
+    
 
     class Meta:
         model = Contract
-        fields = ["id", "client", "sales_contact", "status"]
+        fields = ["id", "client", "sales_contact", "is_signed"]
+
 
 
 class ContractDetailSerializer(ModelSerializer):
-    payment_due = fields.DateTimeField(input_formats=['%Y-%m-%d %H:%M:%S'])
     class Meta:
         model = Contract
         fields = '__all__'
 
-    def validate_sales_contact(self, value):
+        
+    def validate_sales(self, data):
         """
-        Check if user is from  "SALES" team.
+        Check if client is linked to another personel in "SALES" team.
         """
-        if value:
-            user_instance = User.objects.get(pk=value.id)
-            if user_instance.team != "SALES":
-                raise ValidationError(
-                    "WARNING: To be assigned to this client, this personel must be from the 'SALES' team'.")
-            return value
+        if data.get('client'):
+            client = data['client']
+            user = data['sales_contact']
+            if client.sales_contact not in [user, None]:
+                raise ValidationError("Cannot create a contract for a client linked to another sales personnel.")            
+        return data
+
+    

@@ -25,7 +25,7 @@ class IsSales(BasePermission):
 
         if user.groups.filter(name="SALES").exists(): 
             print(user, view.action)           
-            if view.action in ["list", "create", "signed"]:
+            if view.action in ["list", "create"]:
                 return True
             elif view.action == "destroy":
                 return False
@@ -41,10 +41,10 @@ class IsSales(BasePermission):
                     
 
     def has_object_permission(self, request, view, obj):
-
         if obj.sales_contact in [request.user, None]:
-            if view.action == 'update' and obj.status is True:
-                raise PermissionDenied("Cannot update a signed contract.")
+            if "contracts" in request.path_info:
+                if view.action == 'update' and obj.is_signed is True:
+                    raise PermissionDenied("Cannot update a signed contract.")
             return True
 
 

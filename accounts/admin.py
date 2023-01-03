@@ -96,7 +96,7 @@ admin.site.register(User, UserAdmin) #
 class ClientAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Client/Prospect Info',
-         {'fields': ('first_name', 'last_name', 'company_name', 'email', 'phone', 'mobile')}),
+         {'fields': ('first_name', 'last_name',  'company_name', 'email', 'phone', 'mobile')}),
         ('Sales', {'fields': ('status', 'sales_contact')}),
         ('Info', {'fields': ('date_created', 'date_updated')})
     )

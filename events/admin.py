@@ -7,11 +7,11 @@ from .models import Event
 class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Event Info',
-         {'fields': ('contract', 'name', 'location', 'attendees', 'event_date', 'event_status')}),
+         {'fields': ('contract', 'name', 'location', 'attendees', 'event_date', 'event_status')}), #contract
         ('Support', {'fields': ('support_contact', 'notes')}),
         ('Info', {'fields': ('date_created', 'date_updated')})
     )
     readonly_fields = ('date_created', 'date_updated')
-    list_display = ('id', 'contract_id', 'name', 'location', 'support_contact', 'attendees', 'event_date', 'event_status', 'date_created', 'date_updated')
+    list_display = ('id', 'contract_id', 'name', 'location', 'support_contact', 'attendees', 'event_date', 'event_status', 'date_created', 'date_updated')#contract_id
     list_filter = ('event_status', 'support_contact')
     search_fields = ('client__last_name',)

@@ -1,22 +1,20 @@
 from django.db import models
 from django.conf import settings
-from accounts.models import Client, SALES
+from accounts.models import User, Client, SALES
 
 
 class Contract(models.Model):
     sales_contact = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
+        to=User,
+        on_delete=models.PROTECT,
         limit_choices_to={'team': SALES}
     )
     client = models.ForeignKey(
         to=Client,
         on_delete=models.CASCADE,
-        limit_choices_to={'status': True},
-        related_name='contract'
+        limit_choices_to={'status': True}
     )
-    status = models.BooleanField(default=False, verbose_name="signed")
+    is_signed = models.BooleanField(default=False, verbose_name="is_signed")#contract_status
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     amount = models.FloatField()
@@ -25,10 +23,10 @@ class Contract(models.Model):
     def __str__(self):
         name = f"{self.client.last_name}, {self.client.first_name}"
         due = self.payment_due.strftime('%Y-%m-%d')
-        if self.status is False:
+        if self.is_signed is False: 
             stat = "NOT SIGNED"
         else:
-            stat = "SIGNED"
+            stat = "IS_SIGNED"
 
         return f"Contract Nº{self.id} : {name} | Due : {due} ({stat})"
 

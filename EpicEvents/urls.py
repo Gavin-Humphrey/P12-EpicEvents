@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_nested import routers
-#from accounts import views
 from accounts.views import UserViewset, ClientViewset
 from contracts.views import ContractViewset
 from events.views import EventViewset

@@ -7,9 +7,10 @@ class ContractFilter(filters.FilterSet):
     amount = filters.NumberFilter(field_name='amount', lookup_expr='gte')
     client_last_name = filters.CharFilter(field_name='client__last_name', lookup_expr='icontains')
     client_email = filters.CharFilter(field_name='client__email', lookup_expr='iexact')
-    status = filters.BooleanFilter(field_name="signed")
+    status = filters.BooleanFilter(field_name="is_signed")
 
     class Meta:
         model = Contract
-        fields = ['date_created', 'amount', 'client']
+        fields = ['date_created', 'amount', 'client', 'is_signed', 'sales_contact']
 
+    

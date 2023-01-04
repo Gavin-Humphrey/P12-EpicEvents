@@ -1,8 +1,10 @@
 from rest_framework import viewsets, permissions
 from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.contrib.auth.models import Group
@@ -33,7 +35,7 @@ class UserViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.UserListSerializer
     detail_serializer_class = serializers.UserDetailSerializer
-    permission_classes = (IsManagement,)
+    permission_classes = (IsAuthenticated, IsManagement,)
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -44,8 +46,9 @@ class ClientViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.ClientListSerializer
     detail_serializer_class = serializers.ClientDetailSerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = ClientFilter
-    permission_classes = [IsManagement|IsSales|IsSupport] 
+    permission_classes = [IsAuthenticated, IsManagement | IsSales | IsSupport] 
     
 
     def get_queryset(self):
@@ -61,5 +64,3 @@ class ClientViewset(MultipleSerializerMixin, ModelViewSet):
         else:
             queryset = Client.objects.all()
         return queryset
-
-

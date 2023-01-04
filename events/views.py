@@ -1,9 +1,10 @@
 from rest_framework.viewsets import ModelViewSet
 from accounts.views import MultipleSerializerMixin
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from . import serializers
 from events.models import Event
-from events.filters import EventFilter  #
+from events.filters import EventFilter  
 from accounts.models import SALES, SUPPORT
 from accounts.permissions import (
     IsManagement,
@@ -18,8 +19,9 @@ class EventViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.EventListSerializer
     detail_serializer_class = serializers.EventDetailSerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = EventFilter
-    permission_classes = [IsManagement | IsSupport | IsSales]
+    permission_classes = [IsAuthenticated, IsManagement | IsSupport | IsSales] 
     
 
     def get_queryset(self):

@@ -1,8 +1,9 @@
 from rest_framework import status, viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes, action
 from .models import Contract
 from .filters import ContractFilter
@@ -10,7 +11,7 @@ from . import serializers
 from accounts.views import MultipleSerializerMixin
 from accounts.models import User, Client
 from events.serializers import EventDetailSerializer
-from accounts.permissions import (IsManagement, IsSales, IsSupport,)
+from accounts.permissions import (IsManagement, IsSales,)
 
 
 
@@ -19,8 +20,9 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
 
     serializer_class = serializers.ContractListSerializer
     detail_serializer_class = serializers.ContractDetailSerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = ContractFilter
-    permission_classes = [IsManagement | IsSales,] 
+    permission_classes = [IsAuthenticated, IsManagement | IsSales,] 
    
 
     def get_queryset(self):

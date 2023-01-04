@@ -11,10 +11,9 @@ class EventFilter(filters.FilterSet):
     event_before = filters.DateTimeFilter(field_name='event_date', lookup_expr='lte')
   
 
-
     class Meta:
         model = Event
-        fields = ['event_name', 'client_name', 'event_date']
+        fields = ['event_name', 'client_name', 'contract', 'support_contact', 'event_date']
 
    
     def filter_client_name(self, queryset, name, value):

@@ -3,9 +3,11 @@ from accounts.views import MultipleSerializerMixin
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from . import serializers
+from rest_framework.response import Response
+
 from events.models import Event
 from events.filters import EventFilter  
-from accounts.models import SALES, SUPPORT
+from accounts.models import MANAGEMENT, SALES, SUPPORT
 from accounts.permissions import (
     IsManagement,
     IsSales,
@@ -21,17 +23,25 @@ class EventViewset(MultipleSerializerMixin, ModelViewSet):
     detail_serializer_class = serializers.EventDetailSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = EventFilter
-    permission_classes = [IsAuthenticated, IsManagement | IsSupport | IsSales] 
-    
+    permission_classes = [IsAuthenticated, IsManagement | IsSupport | IsSales]
 
+##### Working on event detail.
     def get_queryset(self):
         user = self.request.user
 
-        if self.action == "list" and user.team  == SUPPORT:
-            queryset = Event.objects.filter(support_contact=self.request.user)
-        elif self.action == 'list' and user.team == SALES:
-            return Event.objects.filter(contract__sales_contact=self.request.user)
+        if self.action == "list" and user.team == SUPPORT and not user.is_superuser:
+            queryset = Event.objects.filter(support_contact=self.request.user).order_by('id')
+        elif self.action == 'list' and user.team == SALES and not user.is_superuser:
+            queryset = Event.objects.filter(contract__sales_contact=self.request.user).order_by('id')   
         else:
-            queryset = Event.objects.all()
+            queryset = Event.objects.all().order_by('id')
+        return queryset 
 
-        return queryset    
+
+    def create(self, request, *args, **kwargs):
+        serializer = serializers.EventListSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+    

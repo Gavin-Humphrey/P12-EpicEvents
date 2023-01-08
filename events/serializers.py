@@ -7,7 +7,7 @@ class EventListSerializer(ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['id',  'name', 'location', 'event_status', 'support_contact'] #'ccontract_id',
+        fields = ['id', 'contract', 'name', 'location', 'event_status', 'support_contact', 'event_date'] 
 
 
 class EventDetailSerializer(ModelSerializer):

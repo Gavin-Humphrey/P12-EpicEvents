@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -81,7 +82,7 @@ WSGI_APPLICATION = "EpicEvents.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
 
@@ -95,14 +96,14 @@ DATABASES = {
 
         'PORT': "",  # 5432 by default
     }
-}
+}'''
 
-'''DATABASES = {
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
-}'''
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -153,15 +154,87 @@ AUTHENTICATION_BACKENDS = (
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': (
          'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
-    )
+    ),
+    'DATE_FORMAT': '%d-%m-%Y',
+    'DATETIME_FORMAT': '%d-%m-%Y %H:%M',
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'console': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file_debug': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'filters': ['require_debug_true'],
+            'formatter': 'verbose'
+        },
+        'file_warning': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'warning.log',
+            'formatter': 'verbose'
+        }, 
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        }, 
+        
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file_debug', 'file_warning', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'level': 'DEBUG',
+            'handlers': ['file_debug', 'file_warning', 'console']
+        }
+    },
+}
+
+
+
+
+
+
+##########event views update
+
+
+"""def update(self, request, event_pk, *args, **kwargs):
+        event = Event.objects.filter(pk=event_pk).order_by('id')
+        serialized_data = self.detail_serializer_class(event, data=request.data)
+
+        if serialized_data.is_valid(raise_exception=True):
+            serialized_data.save()
+            return Response(serialized_data.data)"""
+ 

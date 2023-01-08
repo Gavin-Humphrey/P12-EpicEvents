@@ -14,7 +14,7 @@ class Contract(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={'status': True}
     )
-    is_signed = models.BooleanField(default=False, verbose_name="is_signed")#contract_status
+    is_signed = models.BooleanField(default=False, verbose_name="is_signed")
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     amount = models.FloatField()

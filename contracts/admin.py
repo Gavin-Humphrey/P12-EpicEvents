@@ -6,7 +6,7 @@ from .models import Contract
 class ContractAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Contract Info', {'fields': ('client', 'amount', 'payment_due')}),
-        ('Sales', {'fields': ('is_signed', 'sales_contact')}),#contract_status
+        ('Sales', {'fields': ('is_signed', 'sales_contact',)}),
         ('Info', {'fields': ('date_created', 'date_updated')})
     )
     readonly_fields = ('date_created', 'date_updated')

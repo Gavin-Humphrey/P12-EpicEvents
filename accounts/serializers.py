@@ -35,6 +35,7 @@ class ClientListSerializer(ModelSerializer):
     class Meta:
         model = Client
         fields = ['id', 'first_name', 'last_name', 'email', 'sales_contact']
+        read_only__fields = ['id', 'date_created', 'date_updated', 'sales_contact']
 
 
 

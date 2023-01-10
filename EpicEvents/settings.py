@@ -215,7 +215,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'django.request': {
+        '': {
             'level': 'DEBUG',
             'handlers': ['file_debug', 'file_warning', 'console']
         }

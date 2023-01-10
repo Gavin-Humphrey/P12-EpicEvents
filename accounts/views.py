@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import viewsets, permissions
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,6 +15,9 @@ from .permissions import IsManagement, IsSales, IsSupport
 from . import serializers
 from accounts.filters import ClientFilter
 from .models import Client
+
+
+logger = logging.getLogger(__name__)
 
 
 User = get_user_model()
@@ -58,7 +63,9 @@ class ClientViewset(MultipleSerializerMixin, ModelViewSet):
             elif Group.objects.get(name='SUPPORT') in user.groups.all():
                 queryset = Client.objects.filter(contract__event__support_contact=self.request.user).order_by('id')
             else:
-                raise PermissionDenied("You currently are not in any of the authorized teams; contact the admin... ")
+                self.message = "You currently are not in any of the authorized teams; contact the admin... "
+                logger.info("Unauthorized user: Access denied!.")
+                return False 
         else:
             queryset = Client.objects.all().order_by('id')
         return queryset

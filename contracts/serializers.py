@@ -11,8 +11,9 @@ class ContractListSerializer(ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ["id", "client", "sales_contact", "is_signed"]
-
+        fields = '["id", "client", "sales_contact", "is_signed"]'
+        read_only__fields = ['id', 'date_created', 'date_updated', 'sales_contact']
+        
 
 
 class ContractDetailSerializer(ModelSerializer):
@@ -20,8 +21,9 @@ class ContractDetailSerializer(ModelSerializer):
         model = Contract
         fields = '__all__'
 
+    
         
-    def validate_sales(self, data):
+    def validate_sales_contact(self, data):
         """
         Check if client is linked to another personel in "SALES" team.
         """
@@ -31,5 +33,4 @@ class ContractDetailSerializer(ModelSerializer):
             if client.sales_contact not in [user, None]:
                 raise ValidationError("Cannot create a contract for a client linked to another sales personnel.")            
         return data
-
-    
+            

@@ -13,7 +13,7 @@ class EventFilter(filters.FilterSet):
 
     class Meta:
         model = Event
-        fields = ['event_name', 'client_name', 'contract', 'support_contact', 'event_date', 'location', 'event_status']
+        fields = ['event_name', 'client_name', 'client_email']
 
    
     def filter_client_name(self, queryset, name, value):

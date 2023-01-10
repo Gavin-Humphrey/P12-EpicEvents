@@ -29,13 +29,13 @@ class EventViewset(MultipleSerializerMixin, ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        if self.action == "list" and user.team == SUPPORT and not user.is_superuser:
+        if user.team == SUPPORT and not user.is_superuser:
             queryset = Event.objects.filter(support_contact=self.request.user).order_by('id')
-        elif self.action == 'list' and user.team == SALES and not user.is_superuser:
+        elif user.team == SALES and not user.is_superuser:
             queryset = Event.objects.filter(contract__sales_contact=self.request.user).order_by('id')   
         else:
             queryset = Event.objects.all().order_by('id')
-        return queryset 
+        return queryset
 
 
     def create(self, request, *args, **kwargs):

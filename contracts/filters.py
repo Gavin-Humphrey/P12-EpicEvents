@@ -11,6 +11,6 @@ class ContractFilter(filters.FilterSet):
 
     class Meta:
         model = Contract
-        fields = ['date_created', 'amount', 'client', 'is_signed', 'sales_contact']
+        fields = ['date_created', 'amount', 'client_last_name', 'client_email']
 
     

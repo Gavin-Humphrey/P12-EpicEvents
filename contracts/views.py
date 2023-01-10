@@ -13,6 +13,10 @@ from accounts.models import User, Client, SALES, SUPPORT
 from events.serializers import EventDetailSerializer
 from accounts.permissions import (IsManagement, IsSales, IsSupport,)
 
+from django.core.exceptions import ValidationError
+
+from .serializers import *
+
 
 
 
@@ -30,7 +34,7 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
 
         if self.action == 'list' and user.team == SALES and not user.is_superuser:
             queryset = Contract.objects.filter(sales_contact=self.request.user).order_by('id')
-        elif self.action == 'list' and user.team == SUPPORT and not user.is_superuser:
+        if self.action == 'list' and user.team == SUPPORT and not user.is_superuser:
             queryset = Contract.objects.filter(event__support_contact=self.request.user).order_by('id')
         else:
             queryset = Contract.objects.all().order_by('id')
@@ -46,17 +50,14 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
         serialized_data.is_valid(raise_exception=True)
         serialized_data.save()
         client = Client.objects.get(pk=serialized_data.data.get('client'))
-        #client = get_object_or_404(Client, pk=serialized_data.data.get('client'))
         if client.sales_contact is None:
             client.sales_contact = request.user
-            client.save()
+            client.save()  
         return Response(serialized_data.data, status=status.HTTP_202_ACCEPTED)
-
 
 
     def partial_update(self, request, contract_pk, obj):
         contract = Contract.objects.get(pk=contract_pk)
-        #contract = get_object_or_404(Contract, pk=contract_pk)
         serialized_data = self.detail_serializer_class(contract, data=request.data, partial=True)
        
         if serialized_data.is_valid(raise_exception=True):

@@ -82,7 +82,7 @@ WSGI_APPLICATION = "EpicEvents.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-'''DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
 
@@ -96,14 +96,8 @@ WSGI_APPLICATION = "EpicEvents.wsgi.application"
 
         'PORT': "",  # 5432 by default
     }
-}'''
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -221,20 +215,3 @@ LOGGING = {
         }
     },
 }
-
-
-
-
-
-
-##########event views update
-
-
-"""def update(self, request, event_pk, *args, **kwargs):
-        event = Event.objects.filter(pk=event_pk).order_by('id')
-        serialized_data = self.detail_serializer_class(event, data=request.data)
-
-        if serialized_data.is_valid(raise_exception=True):
-            serialized_data.save()
-            return Response(serialized_data.data)"""
- 

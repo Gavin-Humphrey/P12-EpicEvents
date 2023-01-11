@@ -7,19 +7,23 @@ from django.contrib.auth.models import Group
 
 from .models import User, Client
 
-#admin.site.unregister(Group)#
+# admin.site.unregister(Group)#
+
 
 class UserCreationForm(forms.ModelForm):
     """
     A form for creating new users. Includes all the required
     fields, plus a repeated password.
     """
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Password confirmation", widget=forms.PasswordInput
+    )
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ("email",)
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -44,14 +48,15 @@ class UserChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     disabled password hash display field.
     """
+
     password = ReadOnlyPasswordHashField()
 
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ("username",)
 
 
-class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
+class UserAdmin(BaseUserAdmin):  # admin.ModelAdmin
     # The forms to add and change user instances
     form = UserChangeForm
     add_form = UserCreationForm
@@ -60,28 +65,41 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
     These override the definitions on the base UserAdmin
     that reference specific fields on auth.User.
     """
-    list_display = ( 
-        'id', 'username', 'last_name', 'first_name', 'email', 'phone',  'date_joined', 'team'
-        )
-    list_filter = ('team', 'is_active')
+    list_display = (
+        "id",
+        "username",
+        "last_name",
+        "first_name",
+        "email",
+        "phone",
+        "date_joined",
+        "team",
+    )
+    list_filter = ("team", "is_active")
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'phone', 'mobile')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser','team', 'groups')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
-        
+        (None, {"fields": ("username", "email", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "phone", "mobile")}),
+        (
+            "Permissions",
+            {"fields": ("is_active", "is_staff", "is_superuser", "team", "groups")},
+        ),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "password1", "password2"),
+            },
+        ),
     )
-    search_fields = ('email',)
-    ordering = ('email',)
+    search_fields = ("email",)
+    ordering = ("email",)
     filter_horizontal = ()
+
 
 ### For group
 """class UserAdmin(admin.ModelAdmin):
@@ -89,25 +107,44 @@ class UserAdmin(BaseUserAdmin): # admin.ModelAdmin
         'id', 'email', 'last_name', 'first_name')"""
 
 # Now register the new UserAdmin...
-admin.site.register(User, UserAdmin) #
-
+admin.site.register(User, UserAdmin)  #
 
 
 class ClientAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Client/Prospect Info',
-         {'fields': ('first_name', 'last_name',  'company_name', 'email', 'phone', 'mobile')}),
-        ('Sales', {'fields': ('status', 'sales_contact')}),
-        ('Info', {'fields': ('date_created', 'date_updated')})
+        (
+            "Client/Prospect Info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "company_name",
+                    "email",
+                    "phone",
+                    "mobile",
+                )
+            },
+        ),
+        ("Sales", {"fields": ("status", "sales_contact")}),
+        ("Info", {"fields": ("date_created", "date_updated")}),
     )
-    readonly_fields = ('date_created', 'date_updated')
-    list_display = ('id', 'full_name',  'email', 'phone', 'company_name', 'status', 'sales_contact_id')
-    list_filter = ('status', 'sales_contact')
-    search_fields = ('first_name', 'last_name', 'company_name', 'sales_contact')
+    readonly_fields = ("date_created", "date_updated")
+    list_display = (
+        "id",
+        "full_name",
+        "email",
+        "phone",
+        "company_name",
+        "status",
+        "sales_contact",
+    )
+    list_filter = ("status", "sales_contact")
+    search_fields = ("first_name", "last_name", "company_name", "sales_contact")
 
     @staticmethod
     def full_name(obj):
         return f"{obj.last_name}, {obj.first_name}"
+
 
 # Now register the new ClientAdmin...
 admin.site.register(Client, ClientAdmin)

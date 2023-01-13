@@ -11,7 +11,8 @@ class Contract(models.Model):
         limit_choices_to={"team": SALES},
     )
     client = models.ForeignKey(
-        to=Client, on_delete=models.CASCADE, limit_choices_to={"status": True}
+        to=Client, on_delete=models.CASCADE, limit_choices_to={"status": True},
+    related_name='contract'
     )
     is_signed = models.BooleanField(default=False, verbose_name="is_signed")
     date_created = models.DateTimeField(auto_now_add=True)

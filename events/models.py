@@ -8,7 +8,6 @@ class Event(models.Model):
         CREATED = "CREATED"
         INPROGRESS = "INPROGRESS"
         FINISHED = "FINISHED"
-        CANCELED = "CANCELED"
 
     id = models.BigAutoField(primary_key=True)
     contract = models.OneToOneField(
@@ -37,8 +36,6 @@ class Event(models.Model):
     event_date = models.DateTimeField(auto_now_add=False)
 
     notes = models.TextField(null=True, blank=True)
-    """def __str__(self):
-        return f'{self.name}'"""
 
     def __str__(self):
         name = f"{self.contract.client.last_name}, {self.contract.client.first_name}"

@@ -1,17 +1,14 @@
-import logging
 from rest_framework.serializers import ModelSerializer, ValidationError
 from .models import Contract
 
-# from rest_framework import fields
 from accounts.models import User, Client
 
-logger = logging.getLogger(__name__)
 
 
 class ContractListSerializer(ModelSerializer):
     class Meta:
         model = Contract
-        fields = ["id", "client", "sales_contact", "is_signed", "amount"]
+        fields = ["id", "client", "is_signed", "sales_contact", "amount"]
         read_only__fields = ["id", "date_created", "date_updated", "sales_contact"]
 
 
@@ -27,6 +24,9 @@ class ContractDetailSerializer(ModelSerializer):
         client: Client = data["client"]
         if client.sales_contact != sales_contact:
             raise ValidationError(
-                "User cannot create a contract for a client linked to another sales personnel."
+                "User cannot create or modify a contract for a client linked to another sales personnel!"
             )
         return data
+    
+
+

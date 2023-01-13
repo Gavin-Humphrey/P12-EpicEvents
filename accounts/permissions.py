@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from accounts.models import Client
 from contracts.models import Contract
 from events.models import Event
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 
 logger = logging.getLogger(__name__)
@@ -49,17 +49,16 @@ class IsSales(BasePermission):
                         return False    
                     if contract.sales_contact in [request.user, None]:
                         return True
-                       
-                                            
+                                                             
 
     def has_object_permission(self, request, view, obj):
         if obj.sales_contact in [request.user, None]:
             if "contracts" in request.path_info:
                 if view.action == "update" and obj.is_signed is True:
-                    self.message = "Cannot update a signed contract."
-                    logger.info("Cannot update a signed contract.")
+                    logger.warning("Request denied! User tried to update a signed contract.")
                     return False
             return True
+
 
 
 class IsSupport(BasePermission):

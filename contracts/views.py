@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import permission_classes, action
 from .models import Contract
 from .filters import ContractFilter
 from . import serializers
@@ -14,9 +13,9 @@ from accounts.permissions import (
     IsSales,
     IsSupport,
 )
-from django.core.exceptions import ValidationError
 
 from .serializers import *
+
 
 
 class ContractViewset(MultipleSerializerMixin, ModelViewSet):
@@ -25,22 +24,22 @@ class ContractViewset(MultipleSerializerMixin, ModelViewSet):
     detail_serializer_class = serializers.ContractDetailSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ContractFilter
-    permission_classes = [IsAuthenticated, IsManagement | IsSales | IsSupport]
+    permission_classes = [IsAuthenticated, IsManagement|IsSales|IsSupport]
+    
 
     def get_queryset(self):
         user = self.request.user
-
+       
         if self.action == "list" and user.team == SALES and not user.is_superuser:
             queryset = Contract.objects.filter(
                 sales_contact=self.request.user
             ).order_by("id")
-        if self.action == "list" and user.team == SUPPORT and not user.is_superuser:
+        elif self.action == "list" and user.team == SUPPORT and not user.is_superuser:
             queryset = Contract.objects.filter(
                 event__support_contact=self.request.user
             ).order_by("id")
         else:
             queryset = Contract.objects.all().order_by("id")
-
         return queryset
 
 

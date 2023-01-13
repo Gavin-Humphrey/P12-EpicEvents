@@ -3,7 +3,6 @@ import logging
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
-#from rest_framework.decorators import action, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from django.contrib.auth.models import Group
@@ -70,7 +69,7 @@ class ClientViewset(MultipleSerializerMixin, ModelViewSet):
                 ).order_by("id")
             else:
                 self.message = "You currently are not in any of the authorized teams; contact the admin... "
-                logger.info("Unauthorized user: Access denied!.")
+                logger.info("Authorization denied!") 
                 return False
         else:
             queryset = Client.objects.all().order_by("id")
